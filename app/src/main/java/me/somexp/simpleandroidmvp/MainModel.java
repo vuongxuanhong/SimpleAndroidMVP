@@ -6,5 +6,5 @@ package me.somexp.simpleandroidmvp;
 
 public interface MainModel {
 
-        boolean isRightUser(String username, String password);
+    boolean isRightUser(String username, String password);
 }

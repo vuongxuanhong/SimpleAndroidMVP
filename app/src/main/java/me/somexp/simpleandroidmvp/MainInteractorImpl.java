@@ -1,5 +1,8 @@
 package me.somexp.simpleandroidmvp;
 
+import android.os.Handler;
+import android.os.Looper;
+
 /**
  * Created by xuanhong on 4/12/17.
  */
@@ -13,18 +16,27 @@ public class MainInteractorImpl implements MainInteractor {
     }
 
     @Override
-    public void login(String name, String pass, OnMainFinishedListener listener) {
-        boolean isRightUser = model.isRightUser(name, pass);
+    public void login(final String name, final String pass, final OnMainFinishedListener listener) {
 
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final boolean isRightUser = model.isRightUser(name, pass);
 
-        if (listener != null)
-            if (isRightUser) listener.onLoginSuccessful();
-            else listener.onLoginFailed();
+
+                // the result should deliver result to main thread
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (listener != null)
+                            if (isRightUser) listener.onLoginSuccessful();
+                            else listener.onLoginFailed();
+                    }
+                }, 2000);
+            }
+        }).start();
 
     }
+
+
 }
